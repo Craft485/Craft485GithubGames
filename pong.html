@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang = "en">
     <head>
         <title>Table Tennis</title>
     </head>
@@ -26,6 +26,17 @@
                     }
                     return false;
                 };
+                this.move = function() {
+                    var nextY = this.y;
+                    if(keyCode == 40) { //error recived for "keyCode", claims to be undefined
+                        nextY += 5;
+                    } else if(keyCode == 38) { //error recived for "keyCode", claims to be undefined
+                        nextY += -5;
+                    }
+                    nextY = nextY < 0 ? 0 : nextY;
+                    nextY = nextY + this.height > 480 ? 480 - this.height : nextY;
+                    this.y = nextY;
+                };
             }
             //object literal of "paddle" for player and ai paddles
             var player = new paddle(5, 200, 25, 100);   //5, 200, 25, 100
@@ -47,9 +58,14 @@
             function updateGame() {
                 ball.x += ball.xSpeed;
                 ball.y += ball.ySpeed;
-                if(player.hasCollidedWith(ball) || ai.hasCollidedWith(ball)) {
+                var collidedWithPlayer = player.hasCollidedWith(ball);
+                var collidedWithAi = ai.hasCollidedWith(ball);
+                if(collidedWithPlayer || collidedWithAi) {
                     ball.reverseX();
                 }
+                    for(var keyCode in heldDown) {
+                        player.move(keyCode); //error recived for "keyCode", claims to be undefined
+                    }
             }
             function draw() {           //renders all objects and background
                 ctx.fillStyle = "black";
@@ -68,6 +84,9 @@
                 ctx.fillStyle = "white";
                 ctx.fill();
             }
+            var heldDown = {};
+            window.addEventListener("keydown", function(keyInfo) { heldDown[event.keyCode] = true;}, false);
+            window.addEventListener("keyup", function(keyInfo) { delete heldDown[event.keyCode]; }, false);
             tick();
         </script>
     </body>
